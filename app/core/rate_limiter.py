@@ -198,14 +198,22 @@ rate_limiter = RateLimiter()
 
 async def check_rate_limit(client_ip: str, endpoint: str) -> Dict:
     """Check rate limit and return detailed information"""
-    is_allowed = await rate_limiter.is_allowed(client_ip, endpoint)
-    usage_info = await rate_limiter.get_usage_info(client_ip, endpoint)
-    
-    return {
-        "allowed": is_allowed,
-        "usage": usage_info,
-        "limits": rate_limiter.limits
-    }
+    if not await rate_limiter.is_allowed(client_ip, endpoint):
+        usage_info = await rate_limiter.get_usage_info(client_ip, endpoint)
+        
+        return {
+            "allowed": False,
+            "usage": usage_info,
+            "limits": rate_limiter.limits
+        }
+    else:
+        usage_info = await rate_limiter.get_usage_info(client_ip, endpoint)
+        
+        return {
+            "allowed": True,
+            "usage": usage_info,
+            "limits": rate_limiter.limits
+        }
 
 async def get_client_usage(client_ip: str) -> Dict:
     """Get usage information for all endpoints for a client"""
