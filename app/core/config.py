@@ -53,6 +53,13 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     LOG_FORMAT: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     
+    # Add to avoid error if there are environment variables in .env
+    ENVIRONMENT: str = "development"
+    RAPIDAPI_KEY: str = ""
+    RAPIDAPI_HOST: str = ""
+    RAILWAY_ENVIRONMENT: str = ""
+    RENDER_ENVIRONMENT: str = ""
+    
     # Celery Configuration
     CELERY_BROKER_URL: str = "redis://localhost:6379/1"
     CELERY_RESULT_BACKEND: str = "redis://localhost:6379/2"
@@ -63,14 +70,22 @@ class Settings(BaseSettings):
     
     # Supported Currencies (default)
     DEFAULT_FOREX_CURRENCIES: list = [
-        "USD", "EUR", "GBP", "JPY", "IDR", "SGD", "MYR", "THB", 
-        "PHP", "VND", "KRW", "CNY", "AUD", "CAD", "CHF", "NZD"
+        # Major
+        "USD", "EUR", "GBP", "JPY", "IDR", "SGD", "MYR", "THB", "PHP", "VND", "KRW", "CNY", "AUD", "CAD", "CHF", "NZD",
+        # Emerging/Popular
+        "INR", "BRL", "ZAR", "MXN", "RUB", "HKD", "SEK", "NOK", "DKK", "PLN", "HUF", "CZK", "ILS", "AED", "SAR", "TRY",
+        # Tambahan
+        "EGP", "PKR", "BDT", "LKR", "NGN", "UAH", "COP", "CLP", "PEN", "ARS", "KWD", "QAR", "OMR", "BHD", "MAD", "TWD", "RON", "BGN", "HRK", "ISK", "JOD", "KES", "TZS", "GHS", "DZD", "TND", "LBP", "VND", "MMK", "KHR", "LAK", "MOP", "MNT", "UZS", "AZN", "GEL", "BYN", "BAM", "MKD", "ALL", "MDL", "RSD", "XOF", "XAF", "XPF", "XCD", "XDR"
     ]
-    
+
     # Supported Cryptocurrencies (default)
     DEFAULT_CRYPTO_CURRENCIES: list = [
-        "bitcoin", "ethereum", "binancecoin", "cardano", "solana",
-        "polkadot", "dogecoin", "avalanche-2", "polygon", "chainlink"
+        # Top 30+ CoinGecko IDs
+        "bitcoin", "ethereum", "binancecoin", "cardano", "solana", "polkadot", "dogecoin", "avalanche-2", "polygon", "chainlink",
+        "litecoin", "ripple", "usd-coin", "tether", "binance-usd", "shiba-inu", "tron", "dai", "cosmos", "uniswap",
+        "ethereum-classic", "monero", "algorand", "stellar", "internet-computer", "aptos", "arbitrum", "optimism", "vechain", "filecoin",
+        "aave", "the-graph", "maker", "tezos", "elrond-erd-2", "fantom", "neo", "zcash", "dash", "waves", "iota", "kusama", "pancakeswap-token",
+        "gala", "frax", "curve-dao-token", "rocket-pool", "mina-protocol", "thorchain", "1inch", "convex-finance", "enjincoin", "chiliz", "basic-attention-token"
     ]
     
     class Config:
