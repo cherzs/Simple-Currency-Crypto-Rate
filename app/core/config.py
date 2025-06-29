@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     # External API Keys (optional)
     COINMARKETCAP_API_KEY: Optional[str] = None
     ALPHA_VANTAGE_API_KEY: Optional[str] = None
+    FIXER_API_KEY: Optional[str] = None
     
     # Monitoring
     SENTRY_DSN: Optional[str] = None

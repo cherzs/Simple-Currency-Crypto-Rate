@@ -96,6 +96,40 @@ class ForexService:
             logger.error(f"Error fetching from Yahoo Finance: {e}")
             return None
     
+    async def _fetch_from_fixer(self, base: str, symbols: List[str] = None) -> Dict:
+        """Fetch forex rates from Fixer.io API (free plan: base EUR only)"""
+        try:
+            session = await self._get_session()
+            url = f"http://data.fixer.io/api/latest?access_key={settings.FIXER_API_KEY}"
+            if symbols:
+                url += f"&symbols={','.join(symbols)}"
+            async with session.get(url) as response:
+                data = await response.json()
+                if data.get("success"):
+                    rates = data.get("rates", {})
+                    # If base is not EUR, convert manually
+                    if base != "EUR":
+                        if base not in rates:
+                            return None
+                        base_rate = rates[base]
+                        converted = {s: (rates[s] / base_rate) if s in rates else None for s in symbols}
+                        return {
+                            "success": True,
+                            "base": base,
+                            "date": data.get("date"),
+                            "rates": {k: v for k, v in converted.items() if v is not None}
+                        }
+                    else:
+                        return {
+                            "success": True,
+                            "base": "EUR",
+                            "date": data.get("date"),
+                            "rates": rates
+                        }
+        except Exception as e:
+            logger.error(f"Error fetching from Fixer.io: {e}")
+        return None
+    
     async def get_latest_rates(self, base: str, symbols: List[str] = None) -> Dict:
         """Get latest forex rates with caching"""
         try:
@@ -113,6 +147,10 @@ class ForexService:
                 # Try fallback source
                 logger.info("Primary source failed, trying Yahoo Finance")
                 data = await self._fetch_from_yahoo_finance(base, symbols or self.supported_currencies)
+            
+            if (not data or not data.get("success")) and settings.FIXER_API_KEY:
+                logger.info("Yahoo Finance failed, trying Fixer.io")
+                data = await self._fetch_from_fixer(base, symbols or self.supported_currencies)
             
             if data and data.get("success"):
                 # Cache the result
